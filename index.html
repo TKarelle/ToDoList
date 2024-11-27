@@ -4,12 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
-    <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Inclure la bibliothèque Flatpickr -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
@@ -22,6 +21,7 @@
         </div>
         <a href="index.html"><h1>Do it</h1></a>
         <p id="current-date"></p>
+        <button id="logoutButton" class="cta">Se déconnecter</button>
     </header>
     <div class="container">
         <div class="search-bar">
@@ -29,15 +29,6 @@
             <button id="searchButton" class="cta">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </button>
-        </div>
-
-        <div class="navbar_container" id="navbar_container">
-            <div class="navbar">
-                <a href="#Tous">Tous</a>
-                <a href="">En cours</a>
-                <a href="">Terminé</a>
-                <a href="">Archivé</a>
-            </div>   
         </div>
         <section id="toptask" class="toptask">
             <div class="grid">
@@ -119,6 +110,20 @@
           calendar.open(); // Ouvrir le calendrier Flatpickr
         });
     </script>
+    <script>
+    // Vérification du token à chaque fois que la page index.html est chargée
+    function checkAuth() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html'; // Rediriger vers login.html si le token n'est pas trouvé
+        }
+    }
+    
+    checkAuth(); // Appel de la fonction pour vérifier l'authentification
+    </script>
+    
+    <script src="dashboard.js"></script>
+    <script src="login.js"></script>
     <script src="script.js"></script>
     
 </body>
