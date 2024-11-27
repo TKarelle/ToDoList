@@ -46,7 +46,7 @@ function createTask(text, listElement, save = true, storageKey = "tasks") {
     newTask.setAttribute("id", taskId); // Attribuer un ID unique à chaque tâche
     newTask.innerHTML = `
         <div class="task__progress">
-            <button class="button__progress">
+            <button class="button__progress" data-task-id="${taskId}">
                 <i class="fas fa-hourglass-half"></i> 
             </button>
         </div>
@@ -87,7 +87,6 @@ function addTask() {
     taskInput.value = ""; // Réinitialiser le champ
 }
 
-// Fonction pour gérer le statut "fait/non fait" d'une tâche
 function handleTaskDone(event) {
     const button = event.target.closest(".button__done"); // Trouver le bouton cliqué
     if (!button) return; // Si aucun bouton, on arrête
@@ -103,13 +102,10 @@ function handleTaskDone(event) {
     // Vérifier si la tâche est déjà marquée comme terminée
     const isDone = taskElement.classList.contains("button__done_selected");
     if (isDone) {
-        // Annuler l'effet "fait" (retirer la classe et remettre à sa place initiale)
+        // Annuler l'effet "fait"
         taskElement.classList.remove("button__done_selected");
         button.classList.remove("button__done_selected");
         console.log("Tâche marquée comme non terminée :", taskElement);
-        // Déplacer la tâche vers le début de la liste
-        const parentList = taskElement.parentNode;
-        parentList.prepend(taskElement); 
 
     } else {
         // Marquer la tâche comme terminée
@@ -121,14 +117,61 @@ function handleTaskDone(event) {
         const parentList = taskElement.parentNode;
         parentList.appendChild(taskElement);
     }
+
+    // Supprimer la classe "en cours" si elle est présente
+    if (taskElement.classList.contains("button__progress_selected")) {
+        taskElement.classList.remove("button__progress_selected");
+        const progressButton = taskElement.querySelector(".button__progress");
+        if (progressButton) {
+            progressButton.classList.remove("button__progress_selected");
+        }
+    }
 }
 
-// Ajouter un gestionnaire d'événements global pour détecter les clics sur les boutons "done"
+
+// Fonction pour le statut "En cours" d'une tâche
+function handleTaskProgress(event) {
+    const button = event.target.closest(".button__progress");
+    if (!button) return; //Si aucun bouton on arrete 
+
+    const taskId = button.getAttribute("data-task-id"); // Récupérer l'ID de la tâche
+    const taskElement = document.getElementById(taskId); // Trouver la tâche associée
+
+    if (!taskElement) {
+        console.error("Tâche introuvable pour l'ID :", taskId);
+        return;
+    }
+
+    // Verifier si la tâche est déja marquée comme en cour
+    const isProgress = taskElement.classList.contains("button__progress_selected");
+    if (isProgress) {
+        //Annuler l'effet "en cour"
+        taskElement.classList.remove("button__progress_selected");
+        button.classList.remove("button__progress_selected");
+        console.log("Tâche marquée comme non commencée :", taskElement);
+        
+    } else {
+        //Marquer la tâche comme en cour 
+        taskElement.classList.add("button__progress_selected");
+        button.classList.add("button__progress_selected");
+        console.log("Tâche marquée comme commencée :", taskElement);
+
+        // Déplacer la tâche vers le début de la liste
+        const parentList = taskElement.parentNode;
+        parentList.prepend(taskElement);
+    }
+    
+}
+
+// Gestionnaire global pour les clics sur les boutons
 document.addEventListener("click", function (event) {
     if (event.target.classList.contains("fa-check-circle") || event.target.closest(".button__done")) {
         handleTaskDone(event);
+    } else if (event.target.classList.contains("fa-hourglass-half") || event.target.closest(".button__progress")) {
+        handleTaskProgress(event);
     }
 });
+
 
 
 
