@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Inclure la bibliothèque Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+</head>
+<body>
+    <header>
+        <div class="icon_container">
+            <i class="icon_circle fas fa-user-circle"></i>
+            <div class="icon_text">
+                <p>Bonjour,</p>
+                <h3>Mélanie</h3>
+            </div>
+        </div>
+        <a href="index.html"><h1>Do it</h1></a>
+        <p id="current-date"></p>
+    </header>
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Rechecher">
+            <button id="searchButton" class="cta">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            </button>
+        </div>
+
+        <div class="navbar_container" id="navbar_container">
+            <div class="navbar">
+                <a href="#Tous">Tous</a>
+                <a href="">En cours</a>
+                <a href="">Terminé</a>
+                <a href="">Archivé</a>
+            </div>   
+        </div>
+        <section id="toptask" class="toptask">
+            <div class="grid">
+                <div class="title_border">
+                    <h3>Priorités</h3>
+                </div>
+                <div class="toptask_container">
+                </div>
+            </div>
+        </section>
+        <div class="grid other_task" id="other">
+            <section id="Tous" class=" otherleft">
+                <div class="title_border">
+                    <h3 class="title_other_task">Autre Taches</h3>
+                </div>
+                <div class="sort-buttons">
+                    <button id="task-asc">Croissant</button>
+                    <button id="task-desc">Décroissant</button>
+                </div>
+                <div class="list_other_container list" id="task-list">
+                </div>
+                <div class="addtask">
+                    <input type="text" id="new-task" placeholder="Ajouter une tâche">
+                    <button id="add-task"  class="cta">Ajouter</button>
+                </div>
+            </section>
+            <div class="grid otherright">
+                <section class=" events">
+                    <div class="title_border">
+                        <h3 class="title_other_task">Evenements</h3>
+                    </div>
+                    <div class="sort-buttons">
+                        <button id="events-asc">Croissant</button>
+                        <button id="events-desc">Décroissant</button>
+                        <button id="events-date">Date</button>
+                    </div>
+                    <div class="list_events list" id="events-list">
+                        
+                    </div>
+                    <div class="addtask" id="addtaskevents"">
+                        <input type="date" id="event-date" class="input_date" placeholder="Choisir une date">
+                        <input type="text" id="new-events" placeholder="Ajouter un évenement">
+                        <button id="add-events"  class="cta">Ajouter</button>
+                    </div>
+                </section>
+                <section class="gride notes">
+                    <div class="title_border">
+                        <h3 class="title_other_task">Notes</h3>
+                    </div>
+                    <div class="sort-buttons">
+                        <button id="notes-asc">Croissant</button>
+                        <button id="notes-desc">Décroissant</button>
+                        <button id="notes-date">Date</button>
+                    </div>
+                    <div class="list_notes list" id="notes-list">
+                        
+                    </div>
+                    <div class="addtask">
+                        <input type="text" id="new-notes" placeholder="Ajouter une note">
+                        <button id="add-notes"  class="cta">Ajouter</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Initialiser le calendrier Flatpickr
+        const calendar = flatpickr("#event-date", {
+          clickOpens: false, // Désactive l'ouverture du calendrier par défaut
+          onChange: function(selectedDates, dateStr, instance) {
+            
+          }
+        });
+      
+        // Lorsque l'icône du calendrier est cliquée, ouvrir le calendrier
+        document.getElementById('event-date').addEventListener('click', function() {
+          document.getElementById('event-date').style.display = 'block'; // Afficher le champ input
+          document.getElementById('event-date').focus(); // Placer le focus sur l'input
+          calendar.open(); // Ouvrir le calendrier Flatpickr
+        });
+    </script>
+    <script src="script.js"></script>
+    
+</body>
+</html>
