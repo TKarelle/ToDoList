@@ -318,8 +318,10 @@ function loadEventsFromStorage() {
 
 
 // Gestion des notes (avec date de création automatique)
-function createNote(text, listElement, save = true, storageKey) {
-    const currentDate = new Date().toLocaleDateString();
+function createNote(text, listElement, save = true, storageKey, savedDate = null) {
+    // Utiliser la date sauvegardée ou la date actuelle
+    const currentDate = savedDate || new Date().toLocaleDateString();
+
     const newNote = document.createElement("a");
     newNote.classList.add("list_notes_card");
     newNote.innerHTML = `
@@ -333,7 +335,6 @@ function createNote(text, listElement, save = true, storageKey) {
             </button>
         </div>
     `;
-
     // Ajouter l'événement de suppression
     newNote.querySelector(".delete-item").addEventListener("click", () => {
         listElement.removeChild(newNote);
@@ -358,13 +359,19 @@ function addNote() {
     notesInput.value = ""; // Réinitialiser le champ
 }
 
+function loadNotesFromStorage(storageKey, listElement) {
+    const savedNotes = JSON.parse(localStorage.getItem(storageKey)) || [];
+    savedNotes.forEach(note => {
+        createNote(note.text, listElement, false, storageKey, note.date);
+    });
+}
+
+
 // Charger les éléments au démarrage
 window.addEventListener("DOMContentLoaded", () => {
     loadFromStorage("tasks", taskList, createTask);
     loadEventsFromStorage();
-    loadFromStorage("notes", notesList, (text, listElement, _, date) => 
-        createNote(text, listElement, false, "notes")
-    );
+    loadNotesFromStorage("notes", notesList);
 });
 
 // Écouteurs pour ajouter les éléments
