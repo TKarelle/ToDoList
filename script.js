@@ -16,34 +16,45 @@ const notesList = document.getElementById("notes-list");
 function loadFromStorage(key, listElement, createFunction) {
     const storedItems = JSON.parse(localStorage.getItem(key)) || [];
     storedItems.forEach(item => {
-        createFunction(item.text, listElement, false, key, item.date); // Inclure la date pour events/notes uniquement
+        createFunction(item.text, listElement, false, key, item.date, item.isDone, item.isInProgress);
     });
 }
 
-// Sauvegarder les données dans localStorage
+
 function saveToStorage(key, listElement, hasDate = false) {
     const items = Array.from(listElement.children).map(item => {
-        const data = { text: item.querySelector(".task, .list_other_text").innerText.trim() };
+        const data = {
+            id: item.id, // ID de la tâche
+            text: item.querySelector(".task, .list_other_text").innerText.trim(), // Texte de la tâche
+            isDone: item.classList.contains("button__done_selected"), // État terminé
+            isInProgress: item.classList.contains("button__progress_selected") // État en cours
+        };
+
+        // Sauvegarder la date si applicable
         if (hasDate) {
             const dateElement = item.querySelector(".date_item p");
-            data.date = dateElement ? dateElement.innerText.trim() : ""; // Sauvegarder la date
+            data.date = dateElement ? dateElement.innerText.trim() : ""; // Sauvegarde de la date
         }
+
         return data;
     });
+    // Sauvegarder les données dans localStorage
     localStorage.setItem(key, JSON.stringify(items));
 }
+
 
 // Fonction pour générer un ID unique
 function generateUniqueId() {
     return `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 }
 
-// Gestion des tâches (sans date)
-function createTask(text, listElement, save = true, storageKey = "tasks") {
+// Gestion des tâches 
+function createTask(text, listElement, save = true, storageKey = "tasks", date = "", isDone = false, isInProgress = false) {
     const taskId = generateUniqueId();
     const newTask = document.createElement("a");
     newTask.classList.add("list_task_card");
     newTask.setAttribute("id", taskId); // Attribuer un ID unique à chaque tâche
+
     newTask.innerHTML = `
         <div class="task__progress">
             <button class="button__progress" data-task-id="${taskId}">
@@ -65,6 +76,16 @@ function createTask(text, listElement, save = true, storageKey = "tasks") {
         </div>
     `;
 
+    // Appliquer les classes en fonction de l'état de la tâche
+    if (isDone) {
+        newTask.classList.add("button__done_selected");
+        newTask.querySelector(".button__done").classList.add("button__done_selected");
+    }
+    if (isInProgress) {
+        newTask.classList.add("button__progress_selected");
+        newTask.querySelector(".button__progress").classList.add("button__progress_selected");
+    }
+
     // Ajouter l'événement de suppression
     newTask.querySelector(".delete-task").addEventListener("click", () => {
         listElement.removeChild(newTask);
@@ -79,6 +100,7 @@ function createTask(text, listElement, save = true, storageKey = "tasks") {
         saveToStorage(storageKey, listElement);
     }
 }
+
 
 function addTask() {
     const taskText = taskInput.value.trim();
@@ -126,6 +148,7 @@ function handleTaskDone(event) {
             progressButton.classList.remove("button__progress_selected");
         }
     }
+    saveToStorage("tasks", taskList);
 }
 
 
@@ -160,7 +183,7 @@ function handleTaskProgress(event) {
         const parentList = taskElement.parentNode;
         parentList.prepend(taskElement);
     }
-    
+    saveToStorage("tasks", taskList);
 }
 
 // Gestionnaire global pour les clics sur les boutons
@@ -484,6 +507,13 @@ function applyFilter(type, sortType) {
             
             return dateA - dateB; // Tri par date
         });
+    } else if (sortType === 'dateNote') {
+        sortedList = Array.from(list).sort((a, b) => {
+            const dateA = new Date(a.querySelector('.date_item').textContent);
+            const dateB = new Date(b.querySelector('.date_item').textContent);
+
+            return dateA - dateB; // Tri par date
+        });
     }
 
     // Réorganiser l'affichage en fonction du tri
@@ -524,8 +554,5 @@ document.getElementById('notes-desc').addEventListener('click', () => {
 });
 
 document.getElementById('notes-date').addEventListener('click', () => {
-    applyFilter('note', 'date');
+    applyFilter('notes', 'dateNote');
 });
-
-
-
